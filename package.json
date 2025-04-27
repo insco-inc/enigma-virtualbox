@@ -1,12 +1,12 @@
 {
-  "name": "ts-lib-starter",
-  "version": "0.0.0",
-  "description": "My awesome typescript library",
-  "homepage": "https://github.com/kjxbyz/ts-lib-starter",
-  "bugs": "https://github.com/kjxbyz/ts-lib-starter/issues",
+  "name": "enigma-virtualbox",
+  "version": "1.0.0-alpha.0",
+  "description": "Generate an \"Enigma Virtual Box\" project file",
+  "homepage": "https://github.com/kjxbyz/enigma-virtualbox",
+  "bugs": "https://github.com/kjxbyz/enigma-virtualbox/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kjxbyz/ts-lib-starter.git"
+    "url": "git+https://github.com/kjxbyz/enigma-virtualbox.git"
   },
   "license": "MIT",
   "author": {
@@ -27,6 +27,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "enigmavirtualbox": "bin/virtualbox.js"
+  },
   "files": [
     "dist"
   ],
@@ -35,6 +38,9 @@
     "prepare": "husky",
     "prepublishOnly": "pnpm run build",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "cac": "^6.7.14"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.7.1",

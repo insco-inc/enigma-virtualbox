@@ -5,7 +5,7 @@ const banner = `
 /** 
  * Version: ${pkgInfo.version}
  *  
- * Copyright (c) 2024 kjxbyz. All rights reserved.
+ * Copyright (c) 2025 kjxbyz. All rights reserved.
  */
 `;
 
@@ -24,7 +24,13 @@ const options: Options = {
 export default defineConfig([
   {
     ...options,
-    entry: ["src/index.ts"],
+    entry: ["src/cli.ts"],
+    dts: false,
+    noExternal: ["cac"],
+  },
+  {
+    ...options,
+    entry: ["src/main.ts", "src/version.ts"],
     tsconfig: "./tsconfig.json",
   },
 ]);
