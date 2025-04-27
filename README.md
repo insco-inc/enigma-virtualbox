@@ -7,7 +7,19 @@
 ## Install
 
 ```bash
-npm i enigma-virtualbox
+npm i @insco/enigma-virtualbox
+```
+
+## Usage
+
+```powershell
+enigmavirtualbox . --input origin.exe --output origin_boxed.exe
+```
+
+## Debug
+
+```bash
+npx @insco/enigma-virtualbox -h
 ```
 
 ## License
