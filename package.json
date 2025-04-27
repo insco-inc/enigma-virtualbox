@@ -48,7 +48,7 @@
     "eslint-config-prettier": "^10.0.1",
     "globals": "^15.14.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.4.3",
+    "lint-staged": "^15.5.1",
     "prettier": "^3.5.0",
     "sort-package-json": "^2.14.0",
     "tsup": "^8.3.6",
