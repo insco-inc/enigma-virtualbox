@@ -1,0 +1,29 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    groups:
+      typescript-eslint-dependencies:
+        patterns: [ "@typescript-eslint/eslint-plugin", "@typescript-eslint/parser" ]
+      commitlint-dependencies:
+        patterns: [ "@commitlint/cli", "@commitlint/config-conventional" ]
+      eslint-dependencies:
+        patterns: [ "@eslint/eslintrc", "@eslint/js", "eslint", "globals" ]
+    ignore:
+      - dependency-name: "@types/node"
+        versions: [ ">=19" ]
