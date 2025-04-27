@@ -1,12 +1,12 @@
 {
-  "name": "enigma-virtualbox",
+  "name": "@insco/enigma-virtualbox",
   "version": "1.0.0-alpha.0",
   "description": "Generate an \"Enigma Virtual Box\" project file",
-  "homepage": "https://github.com/kjxbyz/enigma-virtualbox",
-  "bugs": "https://github.com/kjxbyz/enigma-virtualbox/issues",
+  "homepage": "https://github.com/insco-inc/enigma-virtualbox",
+  "bugs": "https://github.com/insco-inc/enigma-virtualbox/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kjxbyz/enigma-virtualbox.git"
+    "url": "git+https://github.com/insco-inc/enigma-virtualbox.git"
   },
   "license": "MIT",
   "author": {

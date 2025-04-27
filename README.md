@@ -1,10 +1,8 @@
-# enigma-virtualbox
+# @insco/enigma-virtualbox
 
-[![Test](https://github.com/kjxbyz/enigma-virtualbox/actions/workflows/test.yml/badge.svg)](https://github.com/kjxbyz/enigma-virtualbox/actions/workflows/test.yml)
-[![Publish](https://github.com/kjxbyz/enigma-virtualbox/actions/workflows/publish.yml/badge.svg)](https://github.com/kjxbyz/enigma-virtualbox/actions/workflows/publish.yml)
-[![NPM Version](https://img.shields.io/npm/v/enigma-virtualbox)](https://www.npmjs.com/package/enigma-virtualbox)
-[![NPM Downloads](https://img.shields.io/npm/dy/enigma-virtualbox)](https://www.npmjs.com/package/enigma-virtualbox)
-[![NPM License](https://img.shields.io/npm/l/enigma-virtualbox)](https://github.com/kjxbyz/enigma-virtualbox/blob/main/LICENSE)
+[![Test](https://github.com/insco-inc/enigma-virtualbox/actions/workflows/test.yml/badge.svg)](https://github.com/insco-inc/enigma-virtualbox/actions/workflows/test.yml)
+[![Publish](https://github.com/insco-inc/enigma-virtualbox/actions/workflows/publish.yml/badge.svg)](https://github.com/insco-inc/enigma-virtualbox/actions/workflows/publish.yml)
+[![NPM Version](https://img.shields.io/npm/v/insco%2Fenigma-virtualbox)](https://www.npmjs.com/package/insco/enigma-virtualbox)
 
 ## Install
 
