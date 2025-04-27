@@ -2,6 +2,11 @@
   "name": "@insco/enigma-virtualbox",
   "version": "1.0.0-alpha.0",
   "description": "Generate an \"Enigma Virtual Box\" project file",
+  "keywords": [
+    "enigma",
+    "virtualbox",
+    "evb"
+  ],
   "homepage": "https://github.com/insco-inc/enigma-virtualbox",
   "bugs": "https://github.com/insco-inc/enigma-virtualbox/issues",
   "repository": {
