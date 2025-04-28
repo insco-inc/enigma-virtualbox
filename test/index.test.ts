@@ -1,6 +1,7 @@
-import { test, assert } from "vitest"
-import { foo } from "../src"
+import { test, assert } from "vitest";
+import { version } from "../src";
+import pkgInfo from "../package.json";
 
 test("simple", () => {
-  assert.equal(foo, "foo")
-})
+  assert.equal(version, pkgInfo.version);
+});

@@ -1,1 +1,2 @@
-export const foo = 'foo'
+export { generate } from "./main";
+export { version } from "./version";

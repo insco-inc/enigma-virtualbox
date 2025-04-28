@@ -1,17 +1,10 @@
+import { existsSync, statSync } from "node:fs";
 import { cac } from "cac";
 import { generate } from "./main";
+import { GlobalCLIOptions } from "./types";
 import * as pkgInfo from "../package.json";
 
 const cli = cac("enigma-virtualbox");
-
-// global options
-interface GlobalCLIOptions {
-  "--"?: string[];
-  input?: string;
-  output?: string;
-  projectName?: string;
-  exclude?: string;
-}
 
 cli
   .command("generate <entry>", 'Generate an "Enigma Virtual Box" project file.')
@@ -31,10 +24,32 @@ cli
   .option("--exclude <exclude>", "Regular expression. Files to exclude.")
   .action(async (entry: string, options: GlobalCLIOptions) => {
     console.debug(entry, options);
+    const { input, output } = options;
+
+    if (!input) {
+      console.error("The parameter named `input` cannot be empty");
+      process.exit(1);
+    }
+
+    if (!output) {
+      console.error("The parameter named `output` cannot be empty");
+      process.exit(1);
+    }
+
+    if (!existsSync(input)) {
+      console.error("The parameter named `output` not be a file");
+      process.exit(1);
+    }
+
+    const stats = statSync(input);
+    if (!stats.isFile()) {
+      console.error("The parameter named `output` not be a file");
+      process.exit(1);
+    }
 
     try {
-      const shasumContent = await generate();
-      console.warn(shasumContent);
+      const content = await generate(entry, options);
+      console.warn(content);
       console.log("Generated successfully");
     } catch (error) {
       console.error(error);
