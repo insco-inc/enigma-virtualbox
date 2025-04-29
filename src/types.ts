@@ -15,6 +15,6 @@ export interface GlobalCLIOptions {
   input?: string;
   output?: string;
   projectName: string;
-  exclude?: RegExp;
+  exclude?: string;
   evbOptions?: EvbOptions;
 }

@@ -26,7 +26,7 @@ export default defineConfig([
     ...options,
     entry: ["src/cli.ts"],
     dts: false,
-    noExternal: ["cac", "handlebars", "lodash-es"],
+    noExternal: ["cac", "handlebars", "minimatch", "lodash-es"],
     treeshake: true,
   },
   {

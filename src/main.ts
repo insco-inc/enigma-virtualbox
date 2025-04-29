@@ -1,10 +1,12 @@
 import { resolve, join } from "node:path";
 import { readFileSync, writeFileSync, readdirSync, lstatSync } from "node:fs";
 import Handlebars from "handlebars";
+import { minimatch } from "minimatch";
 import { merge } from "lodash-es";
 import { GlobalCLIOptions } from "./types";
 
 export type TemplateTypes = "PROJECT" | "DIR" | "FILE";
+export type RegExpTypes = "PRE_TAG_INDENTS" | "LT" | "GT" | "SLASH";
 export type VariableTypes =
   | "DIR_NAME"
   | "FILES"
@@ -23,6 +25,10 @@ export type TemplatePath = {
   [key in TemplateTypes]: string;
 };
 
+export type RegExpNames = {
+  [key in RegExpTypes]: RegExp;
+};
+
 export type VariableNames = {
   [key in VariableTypes]: string;
 };
@@ -38,7 +44,14 @@ const DEFAULT_TEMPLATE_PATH: TemplatePath = {
   FILE: resolveDefaultTemplatePath("file.template.hbs"),
 };
 
-const RE: VariableNames = {
+const RE: RegExpNames = {
+  PRE_TAG_INDENTS: /^\s+?</gm,
+  LT: /</g,
+  GT: />/g,
+  SLASH: /\//g,
+};
+
+const VARS: VariableNames = {
   DIR_NAME: "dirName",
   FILES: "files",
   FILE_NAME: "fileName",
@@ -54,13 +67,23 @@ const RE: VariableNames = {
   OPT_PROCESSES_OF_ANY_PLATFORMS: "processesOfAnyPlatforms",
 };
 
+const lt = "__LT__"; // <
+const gt = "__GT__"; // >
+const slash = "__SLASH__"; // /
+
 // Take a template path, read/load it's content and return it. If we fail to load the file, we will throw an appropriate
 // error.
 // Note: The template file should be encoded in UCS2/UTF16LE (that's the encoding that Enigma Virtual Box expects)
 const loadTemplate = (templatePath: string): string => {
   let contents;
   try {
-    contents = readFileSync(resolve(templatePath), "ucs2");
+    contents = readFileSync(resolve(templatePath), "utf8");
+    // We remove indents to trim down template size (you can always beautify/prettify the end result if you wish)
+    contents = contents
+      .replace(RE.PRE_TAG_INDENTS, "<")
+      .replace(RE.LT, lt)
+      .replace(RE.GT, gt)
+      .replace(RE.SLASH, slash);
   } catch (error) {
     if (error instanceof Error) {
       error.message =
@@ -117,13 +140,13 @@ const readDirTree = (path: string): Array<Dir | string> => {
 };
 
 // Take a path to pack, along with templates and return a xml (String) that can be placed as the value of a `Files` tag.
-// The `filter` parameter is used to decide if the file or directory should be added to xml (return true) or not (return
+// The `exclude` parameter is used to decide if the file or directory should be added to xml (return true) or not (return
 // false). If we fail to read the directory tree for the provided path, it will throw an appropriate error
 const generateDirTreeXml = (
   path2Pack: string,
   dirTemplate: Handlebars.TemplateDelegate,
   fileTemplate: Handlebars.TemplateDelegate,
-  filter: RegExp | undefined,
+  exclude: string | undefined,
 ): string => {
   // Helper for the recursive creation of the xml
   const generateDirTreeXmlPart = (
@@ -139,7 +162,10 @@ const generateDirTreeXml = (
       let filesXml;
 
       // Check if the caller wants to skip this file or directory
-      if (filter && name.match(filter)) {
+      if (
+        exclude &&
+        minimatch(fullPath, exclude, { windowsPathsNoEscape: false, dot: true })
+      ) {
         return;
       }
 
@@ -147,19 +173,20 @@ const generateDirTreeXml = (
         // The element describes a directory
         filesXml = generateDirTreeXmlPart(fullPath, element.tree);
         part = dirTemplate({
-          [RE.DIR_NAME]: name,
-          [RE.FILES]: filesXml,
+          [VARS.DIR_NAME]: name,
+          [VARS.FILES]: filesXml,
         });
       } else {
         // The element describes a file
         part = fileTemplate({
-          [RE.FILE_NAME]: element,
-          [RE.FILE_PATH]: fullPath,
+          [VARS.FILE_NAME]: element,
+          [VARS.FILE_PATH]: fullPath,
         });
       }
       // Add the xml for the element
       parts.push(part);
     });
+
     // We return a xml string for the current dirTree
     return parts.join("");
   };
@@ -228,53 +255,59 @@ export const generate = async (
   const evbOptions = options.evbOptions!;
 
   // Load templates
-  const projectTemplate = Handlebars.compile(
-    loadTemplate(DEFAULT_TEMPLATE_PATH.PROJECT),
+  const projectContent = loadTemplate(DEFAULT_TEMPLATE_PATH.PROJECT);
+  const projectTemplate = Handlebars.compile(projectContent);
+
+  const dirContent = loadTemplate(DEFAULT_TEMPLATE_PATH.DIR);
+  const dirTemplate = Handlebars.compile(dirContent);
+
+  const fileContent = loadTemplate(DEFAULT_TEMPLATE_PATH.FILE);
+  const fileTemplate = Handlebars.compile(fileContent);
+
+  const files = generateDirTreeXml(
+    resolve(entry),
+    dirTemplate,
+    fileTemplate,
+    options.exclude,
   );
-  const dirTemplate = Handlebars.compile(
-    loadTemplate(DEFAULT_TEMPLATE_PATH.DIR),
-  );
-  const fileTemplate = Handlebars.compile(
-    loadTemplate(DEFAULT_TEMPLATE_PATH.FILE),
-  );
+
+  // console.log(files);
 
   // Fill the project template
   const content = projectTemplate({
     // Set input and output executables
-    [RE.INPUT_EXE]: resolve(options.input!),
-    [RE.OUTPUT_EXE]: resolve(options.output!),
+    [VARS.INPUT_EXE]: resolve(options.input!),
+    [VARS.OUTPUT_EXE]: resolve(options.output!),
 
     // Set options
-    [RE.OPT_DELETE_EXTRACTED]: Boolean(
+    [VARS.OPT_DELETE_EXTRACTED]: Boolean(
       evbOptions.deleteExtractedOnExit.toString(),
     ),
-    [RE.OPT_COMPRESS_FILES]: Boolean(evbOptions.compressFiles).toString(),
-    [RE.OPT_SHARE_VIRTUAL_SYSTEM]: Boolean(
+    [VARS.OPT_COMPRESS_FILES]: Boolean(evbOptions.compressFiles).toString(),
+    [VARS.OPT_SHARE_VIRTUAL_SYSTEM]: Boolean(
       evbOptions.shareVirtualSystem,
     ).toString(),
-    [RE.OPT_MAP_WITH_TEMP]: Boolean(
+    [VARS.OPT_MAP_WITH_TEMP]: Boolean(
       evbOptions.mapExecutableWithTemporaryFile,
     ).toString(),
-    [RE.OPT_ALLOW_RUNNING_VIRTUAL_EXE]: Boolean(
+    [VARS.OPT_ALLOW_RUNNING_VIRTUAL_EXE]: Boolean(
       evbOptions.allowRunningOfVirtualExeFiles,
     ).toString(),
-    [RE.OPT_PROCESSES_OF_ANY_PLATFORMS]: Boolean(
+    [VARS.OPT_PROCESSES_OF_ANY_PLATFORMS]: Boolean(
       evbOptions.processesOfAnyPlatforms,
     ).toString(),
 
     // Add files
-    [RE.FILES]: generateDirTreeXml(
-      resolve(entry),
-      dirTemplate,
-      fileTemplate,
-      options.exclude,
-    ),
-  });
+    [VARS.FILES]: files,
+  })
+    .replace(RegExp(lt, "mg"), "<")
+    .replace(RegExp(gt, "mg"), ">")
+    .replace(RegExp(slash, "mg"), "/");
 
   // Save the project to file
   // Note: When you create a project manually using Enigma's GUI it prepends BOM (byte order mark) to the file.
   // fs.writeFile doesn't do that, but it doesn't seem to cause any issue with Enigma. If an issue related to the
   // missing BOM arises, we can add it by prepending '\ufeff' to projectTemplate (for details see:
   // http://stackoverflow.com/a/27975629)
-  writeFileSync(resolve(options.projectName), content, "ucs2");
+  writeFileSync(resolve(options.projectName), "\uFEFF" + content, "utf8");
 };
