@@ -13,7 +13,7 @@ npm i @insco/enigma-virtualbox
 ## Usage
 
 ```powershell
-enigmavirtualbox . --input origin.exe --output origin_boxed.exe
+enigmavirtualbox generate . --input origin.exe --output origin_boxed.exe
 ```
 
 ## Debug

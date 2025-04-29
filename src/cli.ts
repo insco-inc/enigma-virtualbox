@@ -9,19 +9,21 @@ const cli = cac("enigma-virtualbox");
 cli
   .command("generate <entry>", 'Generate an "Enigma Virtual Box" project file.')
   .option(
-    "--input <input>",
+    "-i, --input <input>",
     "The input executable file path. Enigma packs the files from path2Pack into a copy of this executable.",
   )
   .option(
-    "--output <output>",
+    "-o, --output <output>",
     "The output executable file path. Enigma saves the packed file to this path.",
   )
   .option(
-    "--project-name <projectName>",
+    "-p, --project-name <projectName>",
     "The file name to which we want to save the generated evb file.",
     { default: "project.evb" },
   )
-  .option("--exclude <exclude>", "Regular expression. Files to exclude.")
+  .option("--evbOptions <evbOptions>", "Set options for evb.")
+  .example("--evbOptions.compressFiles xxx")
+  .option("-e, --exclude <exclude>", "Regular expression. Files to exclude.")
   .action(async (entry: string, options: GlobalCLIOptions) => {
     console.debug(entry, options);
     const { input, output } = options;
@@ -48,8 +50,7 @@ cli
     }
 
     try {
-      const content = await generate(entry, options);
-      console.warn(content);
+      await generate(entry, options);
       console.log("Generated successfully");
     } catch (error) {
       console.error(error);
