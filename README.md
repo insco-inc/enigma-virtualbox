@@ -13,8 +13,28 @@ npm i @insco/enigma-virtualbox
 ## Usage
 
 ```powershell
+# Basic
 enigmavirtualbox generate . --input origin.exe --output origin_boxed.exe
+
+# Advanced
+enigmavirtualbox generate . `
+    --input "$pwd\origin.exe" `
+    --output "$pwd\origin_boxed.exe" `
+    --exclude **/origin.exe `
+    --evbOptions.compressFiles False `
+    --evbOptions.deleteExtractedOnExit False
 ```
+
+## EVB Options
+
+| Options                         |      Values       |
+|:--------------------------------|:-----------------:|
+| deleteExtractedOnExit           | <`True`, `False`> |
+| compressFiles                   | <`True`, `False`> |
+| shareVirtualSystem              | <`True`, `False`> |
+| mapExecutableWithTemporaryFile  | <`True`, `False`> |
+| allowRunningOfVirtualExeFiles   | <`True`, `False`> |
+| processesOfAnyPlatforms         | <`True`, `False`> |
 
 ## Debug
 

@@ -14,5 +14,15 @@ test("simple", () => {
     projectName: "project2.evb",
     exclude: "**/publish.yml",
   });
+  generate(".github", {
+    input: ".npmrc",
+    output: "package.json",
+    projectName: "project3.evb",
+    exclude: "**/publish.yml",
+    evbOptions: {
+      deleteExtractedOnExit: "False",
+      compressFiles: "False",
+    },
+  });
   assert.equal(version, pkgInfo.version);
 });

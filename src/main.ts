@@ -242,12 +242,12 @@ export const generate = async (
   options = merge(
     {
       evbOptions: {
-        deleteExtractedOnExit: true,
-        compressFiles: true,
-        shareVirtualSystem: false,
-        mapExecutableWithTemporaryFile: true,
-        allowRunningOfVirtualExeFiles: true,
-        processesOfAnyPlatforms: false,
+        deleteExtractedOnExit: "True",
+        compressFiles: "True",
+        shareVirtualSystem: "False",
+        mapExecutableWithTemporaryFile: "True",
+        allowRunningOfVirtualExeFiles: "True",
+        processesOfAnyPlatforms: "False",
       },
     },
     options,
@@ -280,22 +280,15 @@ export const generate = async (
     [VARS.OUTPUT_EXE]: resolve(options.output!),
 
     // Set options
-    [VARS.OPT_DELETE_EXTRACTED]: Boolean(
-      evbOptions.deleteExtractedOnExit.toString(),
-    ),
-    [VARS.OPT_COMPRESS_FILES]: Boolean(evbOptions.compressFiles).toString(),
-    [VARS.OPT_SHARE_VIRTUAL_SYSTEM]: Boolean(
-      evbOptions.shareVirtualSystem,
-    ).toString(),
-    [VARS.OPT_MAP_WITH_TEMP]: Boolean(
-      evbOptions.mapExecutableWithTemporaryFile,
-    ).toString(),
-    [VARS.OPT_ALLOW_RUNNING_VIRTUAL_EXE]: Boolean(
-      evbOptions.allowRunningOfVirtualExeFiles,
-    ).toString(),
-    [VARS.OPT_PROCESSES_OF_ANY_PLATFORMS]: Boolean(
-      evbOptions.processesOfAnyPlatforms,
-    ).toString(),
+    [VARS.OPT_DELETE_EXTRACTED]: evbOptions.deleteExtractedOnExit || "True",
+    [VARS.OPT_COMPRESS_FILES]: evbOptions.compressFiles || "True",
+    [VARS.OPT_SHARE_VIRTUAL_SYSTEM]: evbOptions.shareVirtualSystem || "False",
+    [VARS.OPT_MAP_WITH_TEMP]:
+      evbOptions.mapExecutableWithTemporaryFile || "True",
+    [VARS.OPT_ALLOW_RUNNING_VIRTUAL_EXE]:
+      evbOptions.allowRunningOfVirtualExeFiles || "True",
+    [VARS.OPT_PROCESSES_OF_ANY_PLATFORMS]:
+      evbOptions.processesOfAnyPlatforms || "False",
 
     // Add files
     [VARS.FILES]: files,

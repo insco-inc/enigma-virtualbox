@@ -6,7 +6,7 @@ export type EvbOptionTypes =
   | "allowRunningOfVirtualExeFiles"
   | "processesOfAnyPlatforms";
 export type EvbOptions = {
-  [key in EvbOptionTypes]: string;
+  [key in EvbOptionTypes]?: string;
 };
 
 // global options
