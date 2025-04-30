@@ -280,14 +280,17 @@ export const generate = async (
     resolve(entry),
     dirTemplate,
     fileTemplate,
-    options.exclude,
+    options.exclude || options.e,
   );
+
+  const input = options.input || options.i;
+  const output = options.output || options.o;
 
   // Fill the project template
   const content = projectTemplate({
     // Set input and output executables
-    [VARS.INPUT_EXE]: resolve(options.input!),
-    [VARS.OUTPUT_EXE]: resolve(options.output!),
+    [VARS.INPUT_EXE]: resolve(input!),
+    [VARS.OUTPUT_EXE]: resolve(output!),
 
     // Set options
     [VARS.OPT_DELETE_EXTRACTED]: evbOptions?.deleteExtractedOnExit || "True",
@@ -307,7 +310,8 @@ export const generate = async (
     .replace(RegExp(gt, "mg"), ">")
     .replace(RegExp(slash, "mg"), "/");
 
-  const outputPath = resolve(options.projectName);
+  const projectName = options.projectName || options.p || "project.evb";
+  const outputPath = resolve(projectName!);
 
   // Save the project to file
   // Note: When you create a project manually using Enigma's GUI it prepends BOM (byte order mark) to the file.

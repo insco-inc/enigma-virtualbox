@@ -28,26 +28,33 @@ cli
   .option("-e, --exclude <exclude>", "Regular expression. Files to exclude.")
   .action(async (entry: string, options: GlobalCLIOptions) => {
     console.debug(entry, options);
-    const { input, output } = options;
+    const input = options.input || options.i;
+    const output = options.output || options.o;
+    const projectName = options.projectName || options.p;
 
     if (!input) {
-      console.error("The parameter named `input` cannot be empty");
-      process.exit(1);
-    }
-
-    if (!output) {
-      console.error("The parameter named `output` cannot be empty");
+      console.error("The parameter `--input` or `-i` cannot be empty.");
       process.exit(1);
     }
 
     if (!existsSync(input)) {
-      console.error("The parameter named `output` not be a file");
+      console.error("The parameter `--input` or `-i` does not exist.");
       process.exit(1);
     }
 
     const stats = statSync(input);
     if (!stats.isFile()) {
-      console.error("The parameter named `output` not be a file");
+      console.error("The parameter `--input` or `-i` not be a file.");
+      process.exit(1);
+    }
+
+    if (!output) {
+      console.error("The parameter `--output` or `-o` cannot be empty.");
+      process.exit(1);
+    }
+
+    if (!projectName) {
+      console.error("The parameter `--project-name` or `-p` cannot be empty.");
       process.exit(1);
     }
 

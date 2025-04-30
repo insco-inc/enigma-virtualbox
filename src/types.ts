@@ -18,9 +18,13 @@ export type EvbOptions = {
 export interface GlobalCLIOptions {
   "--"?: string[];
   input?: string;
+  i?: string;
   output?: string;
-  projectName: string;
+  o?: string;
+  projectName?: string;
+  p?: string;
   exclude?: string;
+  e?: string;
   templatePath?: TemplateOptions;
   evbOptions?: EvbOptions;
 }
