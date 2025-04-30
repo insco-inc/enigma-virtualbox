@@ -237,7 +237,7 @@ const generateDirTreeXml = (
 export const generate = async (
   entry: string,
   options: GlobalCLIOptions,
-): Promise<void> => {
+): Promise<string> => {
   // Merge options with defaults
   options = merge(
     {
@@ -302,5 +302,7 @@ export const generate = async (
   // fs.writeFile doesn't do that, but it doesn't seem to cause any issue with Enigma. If an issue related to the
   // missing BOM arises, we can add it by prepending '\ufeff' to projectTemplate (for details see:
   // http://stackoverflow.com/a/27975629)
-  writeFileSync(resolve(options.projectName), "\uFEFF" + content, "utf8");
+  const outputPath = resolve(options.projectName);
+  writeFileSync(outputPath, "\uFEFF" + content, "utf8");
+  return outputPath;
 };

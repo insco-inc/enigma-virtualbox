@@ -50,8 +50,8 @@ cli
     }
 
     try {
-      await generate(entry, options);
-      console.log("Generated successfully");
+      const outputPath = await generate(entry, options);
+      console.log("Generated successfully, outputPath: ", outputPath);
     } catch (error) {
       console.error(error);
       process.exit(1);
