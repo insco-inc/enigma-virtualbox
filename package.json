@@ -1,6 +1,6 @@
 {
   "name": "@insco/enigma-virtualbox",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Generate an \"Enigma Virtual Box\" project file",
   "keywords": [
     "Enigma Virtual Box",
