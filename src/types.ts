@@ -1,3 +1,8 @@
+export type TemplateOptionTypes = "project" | "dir" | "file";
+export type TemplateOptions = {
+  [key in TemplateOptionTypes]?: string;
+};
+
 export type EvbOptionTypes =
   | "deleteExtractedOnExit"
   | "compressFiles"
@@ -16,5 +21,6 @@ export interface GlobalCLIOptions {
   output?: string;
   projectName: string;
   exclude?: string;
+  templatePath?: TemplateOptions;
   evbOptions?: EvbOptions;
 }

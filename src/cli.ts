@@ -21,6 +21,8 @@ cli
     "The file name to which we want to save the generated evb file.",
     { default: "project.evb" },
   )
+  .option("--templatePath <templatePath>", "Set template path.")
+  .example("--templatePath.project xxx")
   .option("--evbOptions <evbOptions>", "Set options for evb.")
   .example("--evbOptions.compressFiles xxx")
   .option("-e, --exclude <exclude>", "Regular expression. Files to exclude.")

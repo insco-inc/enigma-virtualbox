@@ -216,13 +216,13 @@ const generateDirTreeXml = (
 // In this function we synchronously generate an 'Enigma Virtual Box' project file. The file will include entries for
 // all the files and dirs located at `path2Pack`, so when you process the project using Enigma's GUI/CLI you will get an
 // executable with all the files packed into it.
-// - projectName (String) - the file path to which we want to save the generated evb file (e.g. 'build/myProject.evb')
-// - inputExe (String) - the input executable file path. Enigma packs the files from `path2Pack` into a copy of this exe
-// - outputExe (String) - the output executable file path. Enigma saves the packed file to this path
-// - path2Pack (String) - the path to the directory with the content that we want to pack into the copy of inputExe
-// - options (Object) - optional
-//     - filter (Function) - optional, if provided it will be called with each file and directory from `path2Pack`. The
+// - entry (String) - the path to the directory with the content that we want to pack into the copy of inputExe
+// - project-name (String) - the file path to which we want to save the generated evb file (e.g. 'build/myProject.evb')
+// - input (String) - the input executable file path. Enigma packs the files from `path2Pack` into a copy of this exe
+// - output (String) - the output executable file path. Enigma saves the packed file to this path
+// - exclude (String) - optional, if provided it will be called with each file and directory from `path2Pack`. The
 //         function should return true for any file or directory the user want to pack, and false for anything else
+// - options (Object) - optional
 //     - templatePath (Object) - optional, will default to the files in the templates directory:
 //         - project (String) - optional, path to a project template
 //         - dir (String) - optional, path to a directory template
@@ -241,6 +241,11 @@ export const generate = async (
   // Merge options with defaults
   options = merge(
     {
+      templatePath: {
+        project: DEFAULT_TEMPLATE_PATH.PROJECT,
+        dir: DEFAULT_TEMPLATE_PATH.DIR,
+        file: DEFAULT_TEMPLATE_PATH.FILE,
+      },
       evbOptions: {
         deleteExtractedOnExit: "True",
         compressFiles: "True",
@@ -252,16 +257,23 @@ export const generate = async (
     },
     options,
   );
-  const evbOptions = options.evbOptions!;
+  const templatePath = options.templatePath;
+  const evbOptions = options.evbOptions;
 
   // Load templates
-  const projectContent = loadTemplate(DEFAULT_TEMPLATE_PATH.PROJECT);
+  const projectContent = loadTemplate(
+    templatePath?.project || DEFAULT_TEMPLATE_PATH.PROJECT,
+  );
   const projectTemplate = Handlebars.compile(projectContent);
 
-  const dirContent = loadTemplate(DEFAULT_TEMPLATE_PATH.DIR);
+  const dirContent = loadTemplate(
+    templatePath?.dir || DEFAULT_TEMPLATE_PATH.DIR,
+  );
   const dirTemplate = Handlebars.compile(dirContent);
 
-  const fileContent = loadTemplate(DEFAULT_TEMPLATE_PATH.FILE);
+  const fileContent = loadTemplate(
+    templatePath?.file || DEFAULT_TEMPLATE_PATH.FILE,
+  );
   const fileTemplate = Handlebars.compile(fileContent);
 
   const files = generateDirTreeXml(
@@ -271,8 +283,6 @@ export const generate = async (
     options.exclude,
   );
 
-  // console.log(files);
-
   // Fill the project template
   const content = projectTemplate({
     // Set input and output executables
@@ -280,15 +290,15 @@ export const generate = async (
     [VARS.OUTPUT_EXE]: resolve(options.output!),
 
     // Set options
-    [VARS.OPT_DELETE_EXTRACTED]: evbOptions.deleteExtractedOnExit || "True",
-    [VARS.OPT_COMPRESS_FILES]: evbOptions.compressFiles || "True",
-    [VARS.OPT_SHARE_VIRTUAL_SYSTEM]: evbOptions.shareVirtualSystem || "False",
+    [VARS.OPT_DELETE_EXTRACTED]: evbOptions?.deleteExtractedOnExit || "True",
+    [VARS.OPT_COMPRESS_FILES]: evbOptions?.compressFiles || "True",
+    [VARS.OPT_SHARE_VIRTUAL_SYSTEM]: evbOptions?.shareVirtualSystem || "False",
     [VARS.OPT_MAP_WITH_TEMP]:
-      evbOptions.mapExecutableWithTemporaryFile || "True",
+      evbOptions?.mapExecutableWithTemporaryFile || "True",
     [VARS.OPT_ALLOW_RUNNING_VIRTUAL_EXE]:
-      evbOptions.allowRunningOfVirtualExeFiles || "True",
+      evbOptions?.allowRunningOfVirtualExeFiles || "True",
     [VARS.OPT_PROCESSES_OF_ANY_PLATFORMS]:
-      evbOptions.processesOfAnyPlatforms || "False",
+      evbOptions?.processesOfAnyPlatforms || "False",
 
     // Add files
     [VARS.FILES]: files,
@@ -297,12 +307,14 @@ export const generate = async (
     .replace(RegExp(gt, "mg"), ">")
     .replace(RegExp(slash, "mg"), "/");
 
+  const outputPath = resolve(options.projectName);
+
   // Save the project to file
   // Note: When you create a project manually using Enigma's GUI it prepends BOM (byte order mark) to the file.
   // fs.writeFile doesn't do that, but it doesn't seem to cause any issue with Enigma. If an issue related to the
   // missing BOM arises, we can add it by prepending '\ufeff' to projectTemplate (for details see:
   // http://stackoverflow.com/a/27975629)
-  const outputPath = resolve(options.projectName);
   writeFileSync(outputPath, "\uFEFF" + content, "utf8");
+
   return outputPath;
 };

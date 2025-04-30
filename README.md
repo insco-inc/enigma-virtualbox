@@ -21,9 +21,18 @@ enigmavirtualbox generate . `
     --input "$pwd\origin.exe" `
     --output "$pwd\origin_boxed.exe" `
     --exclude **/origin.exe `
+    --templatePath.project templates/project.template.hbs `
     --evbOptions.compressFiles False `
     --evbOptions.deleteExtractedOnExit False
 ```
+
+## Template Options
+
+| Options                        |              Values              |
+|:-------------------------------|:--------------------------------:|
+| project                        | `templates/project.template.hbs` |
+| dir                            |   `templates/dir.template.hbs`   |
+| file                           |  `templates/file.template.hbs`   |
 
 ## EVB Options
 
