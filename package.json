@@ -32,11 +32,7 @@
     "url": "git+https://github.com/insco-inc/enigma-virtualbox.git"
   },
   "license": "MIT",
-  "author": {
-    "name": "kjxbyz",
-    "email": "kjxbyz888@outlook.com",
-    "url": "https://github.com/kjxbyz"
-  },
+  "author": "kjxbyz <hello@kjxbyz.com> (https://github.com/kjxbyz)",
   "exports": {
     "import": {
       "types": "./dist/index.d.mts",
