@@ -31,7 +31,7 @@ export default defineConfig([
   },
   {
     ...options,
-    entry: ["src/main.ts", "src/version.ts"],
+    entry: ["src/index.ts", "src/main.ts", "src/version.ts"],
     tsconfig: "./tsconfig.json",
   },
 ]);
