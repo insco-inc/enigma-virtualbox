@@ -47,7 +47,9 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "enigmavirtualbox": "bin/virtualbox.js"
+    "enigmavirtualbox": "bin/virtualbox.js",
+    "evb": "bin/virtualbox.js",
+    "virtualbox": "bin/virtualbox.js"
   },
   "files": [
     "dist",
