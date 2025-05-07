@@ -4,71 +4,41 @@ import Handlebars from "handlebars";
 import { minimatch } from "minimatch";
 import { merge } from "lodash-es";
 import { DEFAULT_TEMPLATE, DEFAULT_TEMPLATE_PATH } from "./templates";
-import { GlobalCLIOptions } from "./types";
-
-export type RegExpTypes = "PRE_TAG_INDENTS" | "LT" | "GT" | "SLASH";
-export type VariableTypes =
-  | "DIR_NAME"
-  | "FILES"
-  | "FILE_NAME"
-  | "FILE_PATH"
-  | "INPUT_EXE"
-  | "OUTPUT_EXE"
-  | "OPT_DELETE_EXTRACTED"
-  | "OPT_COMPRESS_FILES"
-  | "OPT_SHARE_VIRTUAL_SYSTEM"
-  | "OPT_MAP_WITH_TEMP"
-  | "OPT_ALLOW_RUNNING_VIRTUAL_EXE"
-  | "OPT_PROCESSES_OF_ANY_PLATFORMS";
-
-export type RegExpNames = {
-  [key in RegExpTypes]: RegExp;
-};
-
-export type VariableNames = {
-  [key in VariableTypes]: string;
-};
-
-const RE: RegExpNames = {
-  PRE_TAG_INDENTS: /^\s+?</gm,
-  LT: /</g,
-  GT: />/g,
-  SLASH: /\//g,
-};
-
-const VARS: VariableNames = {
-  DIR_NAME: "dirName",
-  FILES: "files",
-  FILE_NAME: "fileName",
-  FILE_PATH: "filePath",
-  INPUT_EXE: "input",
-  OUTPUT_EXE: "output",
-
-  OPT_DELETE_EXTRACTED: "deleteExtractedOnExit",
-  OPT_COMPRESS_FILES: "compressFiles",
-  OPT_SHARE_VIRTUAL_SYSTEM: "shareVirtualSystem",
-  OPT_MAP_WITH_TEMP: "mapExecutableWithTemporaryFile",
-  OPT_ALLOW_RUNNING_VIRTUAL_EXE: "allowRunningOfVirtualExeFiles",
-  OPT_PROCESSES_OF_ANY_PLATFORMS: "processesOfAnyPlatforms",
-};
-
-const lt = "__LT__"; // <
-const gt = "__GT__"; // >
-const slash = "__SLASH__"; // /
+import { PRE_TAG_INDENTS, VARS, CHARS } from "./consts";
+import { Dir } from "./objects";
+import type { GlobalCLIOptions } from "./types";
 
 // Take a template path, read/load it's content and return it. If we fail to load the file, we will throw an appropriate
 // error.
 // Note: The template file should be encoded in UCS2/UTF16LE (that's the encoding that Enigma Virtual Box expects)
-const loadTemplate = (templatePath: string): string => {
+const loadTemplateByPath = (templatePath: string): string => {
+  return readFileSync(resolve(templatePath), "utf8");
+};
+
+// We remove indents to trim down template size (you can always beautify/prettify the end result if you wish)
+const replaceTemplate = (template: string): string => {
+  return template
+    .replace(PRE_TAG_INDENTS, "<")
+    .replace(RegExp(CHARS.LT.origin, "mg"), CHARS.LT.replaced)
+    .replace(RegExp(CHARS.GT.origin, "mg"), CHARS.GT.replaced)
+    .replace(RegExp(CHARS.SLASH.origin, "mg"), CHARS.SLASH.replaced);
+};
+
+const loadTemplate = (
+  templatePath: string | undefined,
+  defaultTemplatePath: string,
+  defaultTemplate: string,
+) => {
   let contents;
   try {
-    contents = readFileSync(resolve(templatePath), "utf8");
-    // We remove indents to trim down template size (you can always beautify/prettify the end result if you wish)
-    contents = contents
-      .replace(RE.PRE_TAG_INDENTS, "<")
-      .replace(RE.LT, lt)
-      .replace(RE.GT, gt)
-      .replace(RE.SLASH, slash);
+    contents = templatePath
+      ? loadTemplateByPath(
+          templatePath.toLowerCase() === "default"
+            ? defaultTemplatePath
+            : templatePath,
+        )
+      : defaultTemplate;
+    contents = replaceTemplate(contents);
   } catch (error) {
     if (error instanceof Error) {
       error.message =
@@ -88,36 +58,6 @@ const loadTemplate = (templatePath: string): string => {
   }
   return contents;
 };
-
-const replaceTemplate = (template: string): string => {
-  let contents;
-  try {
-    // We remove indents to trim down template size (you can always beautify/prettify the end result if you wish)
-    contents = template
-      .replace(RE.PRE_TAG_INDENTS, "<")
-      .replace(RE.LT, lt)
-      .replace(RE.GT, gt)
-      .replace(RE.SLASH, slash);
-  } catch (error) {
-    if (error instanceof Error) {
-      error.message = "Failed to replace template. \n" + error.message;
-      throw error;
-    } else {
-      throw "Failed to load template.\n" + error;
-    }
-  }
-  return contents;
-};
-
-// The Dir class represents a directory
-class Dir {
-  public readonly name: string;
-  public readonly tree: Array<Dir | string>;
-  constructor(name: string, tree: Array<Dir | string>) {
-    this.name = name;
-    this.tree = tree;
-  }
-}
 
 // Take a path and return an array that will contain the entire file list located at that path (sub directories and
 // everything). For a file the matching array element will be a String containing it's name (no path). For a directory
@@ -266,31 +206,25 @@ export const generate = async (
   const evbOptions = options.evbOptions;
 
   // Load templates
-  const projectContent = templatePath?.project
-    ? loadTemplate(
-        templatePath?.project.toLowerCase() === "default"
-          ? DEFAULT_TEMPLATE_PATH.PROJECT
-          : templatePath?.project,
-      )
-    : replaceTemplate(DEFAULT_TEMPLATE.PROJECT);
+  const projectContent = loadTemplate(
+    templatePath?.project,
+    DEFAULT_TEMPLATE_PATH.PROJECT,
+    DEFAULT_TEMPLATE.PROJECT,
+  );
   const projectTemplate = Handlebars.compile(projectContent);
 
-  const dirContent = templatePath?.dir
-    ? loadTemplate(
-        templatePath?.dir.toLowerCase() === "default"
-          ? DEFAULT_TEMPLATE_PATH.DIR
-          : templatePath?.dir,
-      )
-    : replaceTemplate(DEFAULT_TEMPLATE.DIR);
+  const dirContent = loadTemplate(
+    templatePath?.dir,
+    DEFAULT_TEMPLATE_PATH.DIR,
+    DEFAULT_TEMPLATE.DIR,
+  );
   const dirTemplate = Handlebars.compile(dirContent);
 
-  const fileContent = templatePath?.file
-    ? loadTemplate(
-        templatePath?.file.toLowerCase() === "default"
-          ? DEFAULT_TEMPLATE_PATH.FILE
-          : templatePath?.file,
-      )
-    : replaceTemplate(DEFAULT_TEMPLATE.FILE);
+  const fileContent = loadTemplate(
+    templatePath?.file,
+    DEFAULT_TEMPLATE_PATH.FILE,
+    DEFAULT_TEMPLATE.FILE,
+  );
   const fileTemplate = Handlebars.compile(fileContent);
 
   const files = generateDirTreeXml(
@@ -323,9 +257,9 @@ export const generate = async (
     // Add files
     [VARS.FILES]: files,
   })
-    .replace(RegExp(lt, "mg"), "<")
-    .replace(RegExp(gt, "mg"), ">")
-    .replace(RegExp(slash, "mg"), "/");
+    .replace(RegExp(CHARS.LT.replaced, "mg"), CHARS.LT.origin)
+    .replace(RegExp(CHARS.GT.replaced, "mg"), CHARS.GT.origin)
+    .replace(RegExp(CHARS.SLASH.replaced, "mg"), CHARS.SLASH.origin);
 
   const projectName = options.projectName || options.p || "project.evb";
   const outputPath = resolve(projectName!);

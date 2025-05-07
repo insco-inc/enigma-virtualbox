@@ -14,7 +14,9 @@ const options: Options = {
   sourcemap: false,
   clean: true,
   minify: true,
-  dts: true,
+  dts: {
+    banner,
+  },
   format: ["cjs", "esm"],
   banner: {
     js: banner,
