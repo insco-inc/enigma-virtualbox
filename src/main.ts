@@ -3,9 +3,9 @@ import { readFileSync, writeFileSync, readdirSync, lstatSync } from "node:fs";
 import Handlebars from "handlebars";
 import { minimatch } from "minimatch";
 import { merge } from "lodash-es";
+import { DEFAULT_TEMPLATE, DEFAULT_TEMPLATE_PATH } from "./templates";
 import { GlobalCLIOptions } from "./types";
 
-export type TemplateTypes = "PROJECT" | "DIR" | "FILE";
 export type RegExpTypes = "PRE_TAG_INDENTS" | "LT" | "GT" | "SLASH";
 export type VariableTypes =
   | "DIR_NAME"
@@ -21,27 +21,12 @@ export type VariableTypes =
   | "OPT_ALLOW_RUNNING_VIRTUAL_EXE"
   | "OPT_PROCESSES_OF_ANY_PLATFORMS";
 
-export type TemplatePath = {
-  [key in TemplateTypes]: string;
-};
-
 export type RegExpNames = {
   [key in RegExpTypes]: RegExp;
 };
 
 export type VariableNames = {
   [key in VariableTypes]: string;
-};
-
-// Helper to get absolute path to template
-const resolveDefaultTemplatePath = (templateName: string): string => {
-  return join(__dirname, "..", "templates", templateName);
-};
-
-const DEFAULT_TEMPLATE_PATH: TemplatePath = {
-  PROJECT: resolveDefaultTemplatePath("project.template.hbs"),
-  DIR: resolveDefaultTemplatePath("dir.template.hbs"),
-  FILE: resolveDefaultTemplatePath("file.template.hbs"),
 };
 
 const RE: RegExpNames = {
@@ -99,6 +84,26 @@ const loadTemplate = (templatePath: string): string => {
         "'.\n" +
         error
       );
+    }
+  }
+  return contents;
+};
+
+const replaceTemplate = (template: string): string => {
+  let contents;
+  try {
+    // We remove indents to trim down template size (you can always beautify/prettify the end result if you wish)
+    contents = template
+      .replace(RE.PRE_TAG_INDENTS, "<")
+      .replace(RE.LT, lt)
+      .replace(RE.GT, gt)
+      .replace(RE.SLASH, slash);
+  } catch (error) {
+    if (error instanceof Error) {
+      error.message = "Failed to replace template. \n" + error.message;
+      throw error;
+    } else {
+      throw "Failed to load template.\n" + error;
     }
   }
   return contents;
@@ -241,11 +246,11 @@ export const generate = async (
   // Merge options with defaults
   options = merge(
     {
-      templatePath: {
-        project: DEFAULT_TEMPLATE_PATH.PROJECT,
-        dir: DEFAULT_TEMPLATE_PATH.DIR,
-        file: DEFAULT_TEMPLATE_PATH.FILE,
-      },
+      // templatePath: {
+      //   project: DEFAULT_TEMPLATE_PATH.PROJECT,
+      //   dir: DEFAULT_TEMPLATE_PATH.DIR,
+      //   file: DEFAULT_TEMPLATE_PATH.FILE,
+      // },
       evbOptions: {
         deleteExtractedOnExit: "True",
         compressFiles: "True",
@@ -261,19 +266,31 @@ export const generate = async (
   const evbOptions = options.evbOptions;
 
   // Load templates
-  const projectContent = loadTemplate(
-    templatePath?.project || DEFAULT_TEMPLATE_PATH.PROJECT,
-  );
+  const projectContent = templatePath?.project
+    ? loadTemplate(
+        templatePath?.project.toLowerCase() === "default"
+          ? DEFAULT_TEMPLATE_PATH.PROJECT
+          : templatePath?.project,
+      )
+    : replaceTemplate(DEFAULT_TEMPLATE.PROJECT);
   const projectTemplate = Handlebars.compile(projectContent);
 
-  const dirContent = loadTemplate(
-    templatePath?.dir || DEFAULT_TEMPLATE_PATH.DIR,
-  );
+  const dirContent = templatePath?.dir
+    ? loadTemplate(
+        templatePath?.dir.toLowerCase() === "default"
+          ? DEFAULT_TEMPLATE_PATH.DIR
+          : templatePath?.dir,
+      )
+    : replaceTemplate(DEFAULT_TEMPLATE.DIR);
   const dirTemplate = Handlebars.compile(dirContent);
 
-  const fileContent = loadTemplate(
-    templatePath?.file || DEFAULT_TEMPLATE_PATH.FILE,
-  );
+  const fileContent = templatePath?.file
+    ? loadTemplate(
+        templatePath?.file.toLowerCase() === "default"
+          ? DEFAULT_TEMPLATE_PATH.FILE
+          : templatePath?.file,
+      )
+    : replaceTemplate(DEFAULT_TEMPLATE.FILE);
   const fileTemplate = Handlebars.compile(fileContent);
 
   const files = generateDirTreeXml(

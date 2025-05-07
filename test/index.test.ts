@@ -24,5 +24,18 @@ test("simple", () => {
       compressFiles: "False",
     },
   });
+  generate(".github", {
+    input: ".npmrc",
+    output: "package.json",
+    projectName: "project4.evb",
+    exclude: "**/publish.yml",
+    templatePath: {
+      project: "default",
+    },
+    evbOptions: {
+      deleteExtractedOnExit: "False",
+      compressFiles: "False",
+    },
+  });
   assert.equal(version, pkgInfo.version);
 });
