@@ -1,6 +1,5 @@
-import { Char } from "./objects";
-
 export type TemplateOptionTypes = "project" | "dir" | "file";
+
 export type TemplateOptions = {
   [key in TemplateOptionTypes]?: string;
 };
@@ -12,6 +11,7 @@ export type EvbOptionTypes =
   | "mapExecutableWithTemporaryFile"
   | "allowRunningOfVirtualExeFiles"
   | "processesOfAnyPlatforms";
+
 export type EvbOptions = {
   [key in EvbOptionTypes]?: string;
 };
@@ -31,7 +31,6 @@ export interface GlobalCLIOptions {
   evbOptions?: EvbOptions;
 }
 
-export type CharTypes = "LT" | "GT" | "SLASH";
 export type VariableTypes =
   | "DIR_NAME"
   | "FILES"
@@ -45,10 +44,6 @@ export type VariableTypes =
   | "OPT_MAP_WITH_TEMP"
   | "OPT_ALLOW_RUNNING_VIRTUAL_EXE"
   | "OPT_PROCESSES_OF_ANY_PLATFORMS";
-
-export type CharNames = {
-  [key in CharTypes]: Char;
-};
 
 export type VariableNames = {
   [key in VariableTypes]: string;

@@ -14,11 +14,11 @@ const resolveDefaultTemplatePath = (templateName: string): string => {
 const dirTemplate = `
 <File>
   <Type>3</Type>
-  <Name>{{dirName}}</Name>
+  <Name>{{{dirName}}}</Name>
   <Action>0</Action>
   <OverwriteDateTime>False</OverwriteDateTime>
   <OverwriteAttributes>False</OverwriteAttributes>
-  <Files>{{files}}</Files>
+  <Files>{{{files}}}</Files>
   <HideFromDialogs>0</HideFromDialogs>
 </File>
 `;
@@ -26,8 +26,8 @@ const dirTemplate = `
 const fileTemplate = `
 <File>
   <Type>2</Type>
-  <Name>{{fileName}}</Name>
-  <File>{{filePath}}</File>
+  <Name>{{{fileName}}}</Name>
+  <File>{{{filePath}}}</File>
   <ActiveX>False</ActiveX>
   <ActiveXInstall>False</ActiveXInstall>
   <Action>0</Action>
@@ -41,12 +41,12 @@ const fileTemplate = `
 const projectTemplate = `
 <?xml version="1.0" encoding="windows-1252"?>
 <>
-<InputFile>{{input}}</InputFile>
-<OutputFile>{{output}}</OutputFile>
+<InputFile>{{{input}}}</InputFile>
+<OutputFile>{{{output}}}</OutputFile>
 <Files>
   <Enabled>True</Enabled>
-  <DeleteExtractedOnExit>{{deleteExtractedOnExit}}</DeleteExtractedOnExit>
-  <CompressFiles>{{compressFiles}}</CompressFiles>
+  <DeleteExtractedOnExit>{{{deleteExtractedOnExit}}}</DeleteExtractedOnExit>
+  <CompressFiles>{{{compressFiles}}}</CompressFiles>
   <Files>
     <File>
       <Type>3</Type>
@@ -55,7 +55,7 @@ const projectTemplate = `
       <OverwriteDateTime>False</OverwriteDateTime>
       <OverwriteAttributes>False</OverwriteAttributes>
       <HideFromDialogs>0</HideFromDialogs>
-      <Files>{{files}}</Files>
+      <Files>{{{files}}}</Files>
     </File>
   </Files>
 </Files>
@@ -108,11 +108,11 @@ const projectTemplate = `
   <Enabled>False</Enabled>
 </Packaging>
 <Options>
-  <ShareVirtualSystem>{{shareVirtualSystem}}</ShareVirtualSystem>
-  <MapExecutableWithTemporaryFile>{{mapExecutableWithTemporaryFile}}</MapExecutableWithTemporaryFile>
+  <ShareVirtualSystem>{{{shareVirtualSystem}}}</ShareVirtualSystem>
+  <MapExecutableWithTemporaryFile>{{{mapExecutableWithTemporaryFile}}}</MapExecutableWithTemporaryFile>
   <TemporaryFileMask/>
-  <AllowRunningOfVirtualExeFiles>{{allowRunningOfVirtualExeFiles}}</AllowRunningOfVirtualExeFiles>
-  <ProcessesOfAnyPlatforms>{{processesOfAnyPlatforms}}</ProcessesOfAnyPlatforms>
+  <AllowRunningOfVirtualExeFiles>{{{allowRunningOfVirtualExeFiles}}}</AllowRunningOfVirtualExeFiles>
+  <ProcessesOfAnyPlatforms>{{{processesOfAnyPlatforms}}}</ProcessesOfAnyPlatforms>
 </Options>
 <Storage>
   <Files>

@@ -4,7 +4,7 @@ import Handlebars from "handlebars";
 import { minimatch } from "minimatch";
 import { merge } from "lodash-es";
 import { DEFAULT_TEMPLATE, DEFAULT_TEMPLATE_PATH } from "./templates";
-import { PRE_TAG_INDENTS, VARS, CHARS } from "./consts";
+import { PRE_TAG_INDENTS, VARS } from "./consts";
 import { Dir } from "./objects";
 import type { GlobalCLIOptions } from "./types";
 
@@ -17,11 +17,7 @@ const loadTemplateByPath = (templatePath: string): string => {
 
 // We remove indents to trim down template size (you can always beautify/prettify the end result if you wish)
 const replaceTemplate = (template: string): string => {
-  return template
-    .replace(PRE_TAG_INDENTS, "<")
-    .replace(RegExp(CHARS.LT.origin, "mg"), CHARS.LT.replaced)
-    .replace(RegExp(CHARS.GT.origin, "mg"), CHARS.GT.replaced)
-    .replace(RegExp(CHARS.SLASH.origin, "mg"), CHARS.SLASH.replaced);
+  return template.replace(PRE_TAG_INDENTS, "<");
 };
 
 const loadTemplate = (
@@ -256,10 +252,7 @@ export const generate = async (
 
     // Add files
     [VARS.FILES]: files,
-  })
-    .replace(RegExp(CHARS.LT.replaced, "mg"), CHARS.LT.origin)
-    .replace(RegExp(CHARS.GT.replaced, "mg"), CHARS.GT.origin)
-    .replace(RegExp(CHARS.SLASH.replaced, "mg"), CHARS.SLASH.origin);
+  });
 
   const projectName = options.projectName || options.p || "project.evb";
   const outputPath = resolve(projectName!);
