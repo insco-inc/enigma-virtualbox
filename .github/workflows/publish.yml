@@ -33,4 +33,4 @@ jobs:
           pnpm install
 
       - name: Publish
-        run: pnpm publish --access public --tag ${{ github.ref }} --no-git-checks
+        run: pnpm publish --access public --no-git-checks
