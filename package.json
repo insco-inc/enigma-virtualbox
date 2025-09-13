@@ -91,9 +91,6 @@
   },
   "packageManager": "pnpm@10.2.1",
   "engines": {
-    "node": ">=18"
-  },
-  "publishConfig": {
-    "access": "public"
+    "node": ">=20"
   }
 }
