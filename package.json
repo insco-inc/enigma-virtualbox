@@ -25,11 +25,11 @@
     "Portable app",
     "Portable applications"
   ],
-  "homepage": "https://github.com/insco-inc/enigma-virtualbox",
-  "bugs": "https://github.com/insco-inc/enigma-virtualbox/issues",
+  "homepage": "https://github.com/qiazo/enigma-virtualbox",
+  "bugs": "https://github.com/qiazo/enigma-virtualbox/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/insco-inc/enigma-virtualbox.git"
+    "url": "git+https://github.com/qiazo/enigma-virtualbox.git"
   },
   "license": "MIT",
   "author": "kjxbyz <hello@kjxbyz.com> (https://github.com/kjxbyz)",
