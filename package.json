@@ -67,7 +67,7 @@
     "consola": "^3.4.2",
     "handlebars": "^4.7.8",
     "lodash-es": "^4.17.21",
-    "minimatch": "^9.0.5"
+    "minimatch": "^10.1.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
